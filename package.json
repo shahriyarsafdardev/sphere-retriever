@@ -3,6 +3,7 @@
   "displayName": "Sphere Retriever",
   "description": "An extension to retriever files in vs code through chat",
   "version": "0.0.1",
+  "publisher": "Sphere-Chat",
   "engines": {
     "vscode": "^1.79.0"
   },
