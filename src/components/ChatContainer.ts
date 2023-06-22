@@ -89,7 +89,7 @@ export function getWebviewContent() {
             <body>
                 <div class="chat-container" id="chatContainer"></div>
                 <form id="queryForm">
-                    <input type="text" id="queryInput" name="queryInput" placeholder="Type your message...">
+                    <input type="text" id="queryInput" name="queryInput" placeholder="Ask anything about your code...">
                     <div class="loader" id="loader"></div>
                 </form>
                 <script>
@@ -98,6 +98,8 @@ export function getWebviewContent() {
                     const input = document.getElementById('queryInput');
                     const chatContainer = document.getElementById('chatContainer');
                     const loader = document.getElementById('loader');
+
+                    input.focus();
 
                     form.addEventListener('submit', (event) => {
                         event.preventDefault();
@@ -128,6 +130,7 @@ export function getWebviewContent() {
 
                                 loader.style.display = 'none'; // hide loader
                                 input.style.display = 'flex'; // show form
+                                input.focus()
                         }
                     });
                 </script>
