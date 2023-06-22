@@ -219,18 +219,21 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 const getAPIKey = async () => {
-
   let apiKey: string | undefined = await vscode.window.showInputBox({
-    placeHolder: "Please enter your API key or type 'exit' to quit:"
+    placeHolder: "Please enter your API key or type 'exit' to quit:",
+    prompt: "Please enter your API key or type 'exit' to quit:",
   });
 
-  if (!apiKey || apiKey.trim().toLowerCase() === "exit" || apiKey.trim() === "" || apiKey.trim() !== 'sphere-2023') {
+  if (apiKey?.trim()?.toLowerCase() === "exit") {
+    return false;
+  }
+
+  if (!apiKey || apiKey?.trim() === "" || apiKey?.trim() !== 'sphere-2023') {
     vscode.window.showErrorMessage('Invalid API key. Please try again!');
     return false;
   } else {
     return true;
   }
-
 };
 
 const getAnswer = async (query: string, messages: Object[]) => {
