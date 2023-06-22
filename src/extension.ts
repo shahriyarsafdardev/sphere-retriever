@@ -4,10 +4,13 @@ import * as path from 'path';
 import { Configuration, OpenAIApi } from "openai";
 import * as minimatch from 'minimatch';
 import { getWebviewContent } from './components/chatview';
+import * as dotenv from 'dotenv';
 
+
+dotenv.config();
 
 const configuration = new Configuration({
-  apiKey: 'YOUR_OPENAI_API_KEY',
+  apiKey: process.env.OPEN_API_KEY,
 });
 const openai = new OpenAIApi(configuration);
 let ROOT_PATH = '';
@@ -27,10 +30,10 @@ async function chatCompletion(messages: any, model: string = "gpt-3.5-turbo", ma
     try {
       const response = await openai.createChatCompletion({
         model: model,
-        messages: messages
+        messages: messages?.slice(-3)
       });
 
-      return response.data.choices[0].message?.content || '';
+      return response?.data?.choices[0]?.message?.content || '';
     } catch (error: any) {
       if (error.name === 'RateLimitError') {
         // exponential back off with jitter
@@ -52,11 +55,11 @@ async function readGitignore(gitignorePath: string): Promise<string[]> {
 
   try {
     if (fs.existsSync(gitignorePath)) {
-      const lines: string[] = fs.readFileSync(gitignorePath, { encoding: 'utf8' }).split('\n');
+      const lines: string[] = fs.readFileSync(gitignorePath, { encoding: 'utf8' })?.split('\n');
       for (let line of lines) {
-        let strippedLine = line.trim();
-        if (strippedLine && !strippedLine.startsWith("#")) {
-          ignorePatterns.push(strippedLine.endsWith('/') ? strippedLine.slice(0, -1) : strippedLine);
+        let strippedLine = line?.trim();
+        if (strippedLine && !strippedLine?.startsWith("#")) {
+          ignorePatterns.push(strippedLine?.endsWith('/') ? strippedLine.slice(0, -1) : strippedLine);
         }
       }
     }
@@ -123,9 +126,9 @@ function askForFiles(userInput: string, fileTree: string): Object {
     "content": `
         Answer this query: ${userInput}.
         This is my existing code base file tree: ${fileTree}.
-        Before providing a response please give me the name of most precised files you want to get view before writing the code,
-        so that you have complete context. If there is no file related to ${userInput} exists then return 'None',
-        If any file related to ${userInput} exists then return only that file name and don't add extra text
+        Before providing a response please give me the name of most precised file you want to get view before writing the code,
+        so that you have complete context. If any file related to ${userInput} exists then return only that file name and don't add extra text.
+        If there is no file related to ${userInput} exists then return 'None'
         `
   };
 }
@@ -238,16 +241,23 @@ const getAnswer = async (query: string, messages: Object[]) => {
   }
   let gptResponse: string = await chatCompletion(messages);
 
-  if (!gptResponse.toLowerCase().includes("none")) {
+  if (!gptResponse?.toLowerCase()?.includes("none")) {
     messages = appendAssistantMessage(gptResponse, messages);
     let fileNames: string[] = gptResponse.match(/\b[\w-]+\.[\w-]+\b/g) || [];
     fileNames = Array.from(new Set(fileNames));
     let fileContents: Object = await fetchFileContents(fileNames);
 
-    if (Object.keys(fileContents).length > 0) {
+    if (Object.keys(fileContents)?.length > 0) {
       messages = appendUserMessage(
         `\nHere are the files you asked for: \n${JSON.stringify(fileContents)}\n`, messages);
       gptResponse = await chatCompletion(messages);
+    }
+
+  }
+  else {
+    if (messages?.length === 1) {
+      gptResponse = "Please provide a filename to get started!";
+      messages = [];
     }
   }
   return [gptResponse, messages];
