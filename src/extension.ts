@@ -6,7 +6,7 @@ import * as minimatch from 'minimatch';
 import { getWebviewContent } from './components/ChatContainer';
 
 const configuration = new Configuration({
-  apiKey: 'YOUR_OPENAI_API_KEY',
+  apiKey: process.env.OPENAI_KEY,
 });
 const openai = new OpenAIApi(configuration);
 let ROOT_PATH = '';
