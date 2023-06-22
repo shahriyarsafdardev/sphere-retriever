@@ -3,14 +3,13 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { Configuration, OpenAIApi } from "openai";
 import * as minimatch from 'minimatch';
-import { getWebviewContent } from './components/chatview';
+import { getWebviewContent } from './components/ChatContainer';
 import * as dotenv from 'dotenv';
-
 
 dotenv.config();
 
 const configuration = new Configuration({
-  apiKey: process.env.OPEN_API_KEY,
+  apiKey: process.env.OPENAI_API_KEY,
 });
 const openai = new OpenAIApi(configuration);
 let ROOT_PATH = '';
