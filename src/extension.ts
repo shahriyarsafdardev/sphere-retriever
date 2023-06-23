@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
 import { Configuration, OpenAIApi } from "openai";
-import * as minimatch from 'minimatch';
+import * as micromatch from 'micromatch';
 import { getWebviewContent } from './components/ChatContainer';
 
 const configuration = new Configuration({
@@ -68,7 +68,7 @@ async function readGitignore(gitignorePath: string): Promise<string[]> {
 
 function shouldIgnore(entryPath: string, entry: string, ignorePatterns: string[]): boolean {
   for (let pattern of ignorePatterns) {
-    if (minimatch(entryPath, pattern) || minimatch(entry, pattern)) {
+    if (micromatch.isMatch(entryPath, pattern) || micromatch.isMatch(entry, pattern)) {
       return true;
     }
   }
